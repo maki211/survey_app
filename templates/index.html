@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>学年選択</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="card">
+        <h2>アンケート開始</h2>
+        <form method="POST">
+            <label for="grade">学年を選択してください:</label><br>
+            <select name="grade" id="grade" required>
+                <option value="">--選択--</option>
+                <option value="本科1">本科1</option>
+                <option value="本科2">本科2</option>
+                <option value="本科3">本科3</option>
+                <option value="本科4">本科4</option>
+                <option value="本科5">本科5</option>
+                <option value="専攻科1">専攻科1</option>
+                <option value="専攻科2">専攻科2</option>
+            </select><br><br>
+            <button type="submit" class="btn">開始</button>
+        </form>
+    </div>
+</body>
+</html>
