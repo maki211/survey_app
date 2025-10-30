@@ -90,13 +90,9 @@ def survey():
         total=len(session["pairs"])
     )
 
-from pyngrok import ngrok
+
 
 if __name__ == "__main__":
-    # ポート指定
-    port = 5000
-    # 公開 URL を作る
-    public_url = ngrok.connect(port)
-    print(f" * ngrok tunnel URL: {public_url}")
-    # Flask 起動
-    app.run(debug=True, port=port)
+    port = int(os.environ.get("PORT", 5000))  # Render の PORT を優先
+    app.run(host="0.0.0.0", port=port, debug=True)
+
