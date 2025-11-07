@@ -70,7 +70,7 @@ def survey():
         })
         session["responses"] = responses
 
-   if current >= len(session["pairs"]):
+    if current >= len(session["pairs"]):
    	df = pd.DataFrame(responses)
 
    	# ===== Google Sheets に追記 =====
@@ -93,10 +93,10 @@ def survey():
 
    	return render_template("done.html")
 
-   pair = session["pairs"][current]
-   session["current"] = current + 1
+    pair = session["pairs"][current]
+    session["current"] = current + 1
 
-   return render_template(
+    return render_template(
         "survey.html",
         stage="survey",
         real_img=pair["real"],
