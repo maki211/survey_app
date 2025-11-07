@@ -31,9 +31,7 @@ def make_pairs():
             })
     return pairs
 
-
 pairs = make_pairs()
-
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -71,27 +69,26 @@ def survey():
         session["responses"] = responses
 
     if current >= len(session["pairs"]):
-   	df = pd.DataFrame(responses)
+        df = pd.DataFrame(responses)
+        # ===== Google Sheets に追記 =====
+        SHEET_NAME = "アンケート結果"
+        SPREADSHEET_ID = "150Qv1M4eRfaNJQnznln1SnUC4yVqFKTFhI0EOjcb2Ak"
 
-   	# ===== Google Sheets に追記 =====
-   	SHEET_NAME = "アンケート結果"
-   	SPREADSHEET_ID = "150Qv1M4eRfaNJQnznln1SnUC4yVqFKTFhI0EOjcb2Ak"
+        SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
+        creds = Credentials.from_service_account_file("credentials.json", scopes=SCOPES)
+        gc = gspread.authorize(creds)
 
-   	SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-   	creds = Credentials.from_service_account_file("credentials.json", scopes=SCOPES)
-   	gc = gspread.authorize(creds)
+        sh = gc.open_by_key(SPREADSHEET_ID)
+        try:
+            worksheet = sh.worksheet(SHEET_NAME)
+        except gspread.exceptions.WorksheetNotFound:
+            worksheet = sh.add_worksheet(title=SHEET_NAME, rows="100", cols="10")
 
-   	sh = gc.open_by_key(SPREADSHEET_ID)
-   	try:
-        	worksheet = sh.worksheet(SHEET_NAME)
-    	except gspread.exceptions.WorksheetNotFound:
-        	worksheet = sh.add_worksheet(title=SHEET_NAME, rows="100", cols="10")
+        df.insert(0, "timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        values = [df.columns.values.tolist()] + df.values.tolist()
+        worksheet.append_rows(values)
 
-   	df.insert(0, "timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-   	values = [df.columns.values.tolist()] + df.values.tolist()
-   	worksheet.append_rows(values)
-
-   	return render_template("done.html")
+        return render_template("done.html")
 
     pair = session["pairs"][current]
     session["current"] = current + 1
