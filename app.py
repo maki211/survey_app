@@ -67,16 +67,29 @@ def survey():
         })
         session["responses"] = responses
 
+    # ✅ すべての質問が終わった場合の処理
     if current >= len(session["pairs"]):
-        # Excel形式で保存
+        from datetime import datetime
+        import openpyxl
+
         df = pd.DataFrame(responses)
+        sheet_name = datetime.now().strftime("%Y-%m-%d")
+
         if os.path.exists(RESULT_XLSX):
-            # 既存ファイルに追記
-            existing_df = pd.read_excel(RESULT_XLSX)
-            df = pd.concat([existing_df, df], ignore_index=True)
-        df.to_excel(RESULT_XLSX, index=False)
+            with pd.ExcelWriter(RESULT_XLSX, engine="openpyxl", mode="a", if_sheet_exists="overlay") as writer:
+                existing_sheets = writer.book.sheetnames
+                if sheet_name in existing_sheets:
+                    i = 1
+                    while f"{sheet_name}_{i}" in existing_sheets:
+                        i += 1
+                    sheet_name = f"{sheet_name}_{i}"
+                df.to_excel(writer, sheet_name=sheet_name, index=False)
+        else:
+            df.to_excel(RESULT_XLSX, sheet_name=sheet_name, index=False)
+
         return render_template("done.html")
 
+    # ✅ まだ質問が残っている場合の処理
     pair = session["pairs"][current]
     session["current"] = current + 1
 
@@ -90,33 +103,3 @@ def survey():
         total=len(session["pairs"])
     )
 
-
-
-from datetime import datetime
-import pandas as pd
-import os
-
-# ... 省略 ...
-
-if current >= len(session["pairs"]):
-    df = pd.DataFrame(responses)
-
-    # 今日の日付をシート名にする（例: "2025-10-31"）
-    sheet_name = datetime.now().strftime("%Y-%m-%d")
-
-    # 既存ファイルがある場合 → 追記
-    if os.path.exists(RESULT_XLSX):
-        with pd.ExcelWriter(RESULT_XLSX, engine="openpyxl", mode="a", if_sheet_exists="overlay") as writer:
-            # 既に同名シートがある場合 → "_1", "_2" として保存
-            existing_sheets = writer.book.sheetnames
-            if sheet_name in existing_sheets:
-                i = 1
-                while f"{sheet_name}_{i}" in existing_sheets:
-                    i += 1
-                sheet_name = f"{sheet_name}_{i}"
-            df.to_excel(writer, sheet_name=sheet_name, index=False)
-    else:
-        # 新規作成
-        df.to_excel(RESULT_XLSX, sheet_name=sheet_name, index=False)
-
-    return render_template("done.html")
