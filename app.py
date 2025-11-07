@@ -70,51 +70,33 @@ def survey():
         })
         session["responses"] = responses
 
-    if current >= len(session["pairs"]):
-    	df = pd.DataFrame(responses)
+   if current >= len(session["pairs"]):
+   	df = pd.DataFrame(responses)
 
-    	# ===== Google Sheets に追記 =====
-    	SHEET_NAME = "アンケート結果"  # 任意のシート名
-    	SPREADSHEET_ID = "150Qv1M4eRfaNJQnznln1SnUC4yVqFKTFhI0EOjcb2Ak"  # URLから取る
+   	# ===== Google Sheets に追記 =====
+   	SHEET_NAME = "アンケート結果"
+   	SPREADSHEET_ID = "150Qv1M4eRfaNJQnznln1SnUC4yVqFKTFhI0EOjcb2Ak"
 
-    	# 認証設定
-    	SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-    	import json
-	import tempfile
+   	SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
+   	creds = Credentials.from_service_account_file("credentials.json", scopes=SCOPES)
+   	gc = gspread.authorize(creds)
 
-	# Render では環境変数から読み込む
-	google_creds_json = os.environ.get("GOOGLE_CREDENTIALS")
-
-	# 一時ファイルとして保存（gspread はファイルパスを要求するため）
-	with tempfile.NamedTemporaryFile(mode="w+", delete=False) as temp_json:
-    	temp_json.write(google_creds_json)
-    	temp_json_path = temp_json.name
-
-	creds = Credentials.from_service_account_file(temp_json_path, scopes=SCOPES)
-
-    	gc = gspread.authorize(creds)
-
-    	# スプレッドシートとシートを開く
-    	sh = gc.open_by_key(SPREADSHEET_ID)
-    	try:
+   	sh = gc.open_by_key(SPREADSHEET_ID)
+   	try:
         	worksheet = sh.worksheet(SHEET_NAME)
     	except gspread.exceptions.WorksheetNotFound:
         	worksheet = sh.add_worksheet(title=SHEET_NAME, rows="100", cols="10")
 
-   	 # 日付を先頭に追加
-    	df.insert(0, "timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+   	df.insert(0, "timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+   	values = [df.columns.values.tolist()] + df.values.tolist()
+   	worksheet.append_rows(values)
 
-    	# pandas → list に変換して書き込み
-    	values = [df.columns.values.tolist()] + df.values.tolist()
-    	worksheet.append_rows(values)
+   	return render_template("done.html")
 
-    	return render_template("done.html")
+   pair = session["pairs"][current]
+   session["current"] = current + 1
 
-
-    pair = session["pairs"][current]
-    session["current"] = current + 1
-
-    return render_template(
+   return render_template(
         "survey.html",
         stage="survey",
         real_img=pair["real"],
