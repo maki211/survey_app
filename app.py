@@ -92,7 +92,31 @@ def survey():
 
 
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Render の PORT を優先
-    app.run(host="0.0.0.0", port=port, debug=True)
+from datetime import datetime
+import pandas as pd
+import os
 
+# ... 省略 ...
+
+if current >= len(session["pairs"]):
+    df = pd.DataFrame(responses)
+
+    # 今日の日付をシート名にする（例: "2025-10-31"）
+    sheet_name = datetime.now().strftime("%Y-%m-%d")
+
+    # 既存ファイルがある場合 → 追記
+    if os.path.exists(RESULT_XLSX):
+        with pd.ExcelWriter(RESULT_XLSX, engine="openpyxl", mode="a", if_sheet_exists="overlay") as writer:
+            # 既に同名シートがある場合 → "_1", "_2" として保存
+            existing_sheets = writer.book.sheetnames
+            if sheet_name in existing_sheets:
+                i = 1
+                while f"{sheet_name}_{i}" in existing_sheets:
+                    i += 1
+                sheet_name = f"{sheet_name}_{i}"
+            df.to_excel(writer, sheet_name=sheet_name, index=False)
+    else:
+        # 新規作成
+        df.to_excel(RESULT_XLSX, sheet_name=sheet_name, index=False)
+
+    return render_template("done.html")
