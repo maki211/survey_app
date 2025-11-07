@@ -4,6 +4,8 @@ import pandas as pd
 from datetime import datetime
 import gspread
 from google.oauth2.service_account import Credentials
+import json
+import os
 
 
 app = Flask(__name__)
@@ -68,14 +70,19 @@ def survey():
         })
         session["responses"] = responses
 
+
     if current >= len(session["pairs"]):
         df = pd.DataFrame(responses)
+
         # ===== Google Sheets に追記 =====
         SHEET_NAME = "アンケート結果"
         SPREADSHEET_ID = "150Qv1M4eRfaNJQnznln1SnUC4yVqFKTFhI0EOjcb2Ak"
 
         SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-        creds = Credentials.from_service_account_file("credentials.json", scopes=SCOPES)
+
+        # 🔽 Render 環境変数から credentials を取得
+        creds_info = json.loads(os.environ["GOOGLE_CREDENTIALS"])
+        creds = Credentials.from_service_account_info(creds_info, scopes=SCOPES)
         gc = gspread.authorize(creds)
 
         sh = gc.open_by_key(SPREADSHEET_ID)
@@ -89,6 +96,7 @@ def survey():
         worksheet.append_rows(values)
 
         return render_template("done.html")
+
 
     pair = session["pairs"][current]
     session["current"] = current + 1
