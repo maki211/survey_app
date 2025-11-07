@@ -102,4 +102,3 @@ def survey():
         question_num=current + 1,
         total=len(session["pairs"])
     )
-
