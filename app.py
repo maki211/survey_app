@@ -1,6 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import os, random
 import pandas as pd
+from datetime import datetime
+import gspread
+from google.oauth2.service_account import Credentials
+
 
 app = Flask(__name__)
 app.secret_key = "secret_key_for_session"
@@ -10,8 +14,7 @@ SYNTH_FOLDER = "static/images"
 RESULT_XLSX = "results.xlsx"
 NUM_QUESTIONS = 10
 
-# ---------- ファイルペア作成 ----------
-# ---------- ファイルペア作成（同じプレフィックスを含むものを対応） ----------
+
 def make_pairs():
     real_files = os.listdir(REAL_FOLDER)
     synth_files = os.listdir(SYNTH_FOLDER)
@@ -19,7 +22,6 @@ def make_pairs():
     pairs = []
     for real in real_files:
         real_prefix = os.path.splitext(real)[0]
-        # synth 側に同じプレフィックスを含むものがあればペアにする
         match = next((s for s in synth_files if real_prefix in s), None)
         if match:
             pairs.append({
@@ -29,9 +31,9 @@ def make_pairs():
             })
     return pairs
 
-# 🔽 この行を忘れずに！
+
 pairs = make_pairs()
-print(f"共通ペア数: {len(pairs)}")
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -44,6 +46,7 @@ def index():
 
     grades = ["本科1", "本科2", "本科3", "本科4", "本科5", "専攻科1", "専攻科2"]
     return render_template("survey.html", stage="grade", grades=grades)
+
 
 @app.route("/survey", methods=["GET", "POST"])
 def survey():
@@ -67,29 +70,47 @@ def survey():
         })
         session["responses"] = responses
 
-    # ✅ すべての質問が終わった場合の処理
     if current >= len(session["pairs"]):
-        from datetime import datetime
-        import openpyxl
+    	df = pd.DataFrame(responses)
 
-        df = pd.DataFrame(responses)
-        sheet_name = datetime.now().strftime("%Y-%m-%d")
+    	# ===== Google Sheets に追記 =====
+    	SHEET_NAME = "アンケート結果"  # 任意のシート名
+    	SPREADSHEET_ID = "150Qv1M4eRfaNJQnznln1SnUC4yVqFKTFhI0EOjcb2Ak"  # URLから取る
 
-        if os.path.exists(RESULT_XLSX):
-            with pd.ExcelWriter(RESULT_XLSX, engine="openpyxl", mode="a", if_sheet_exists="overlay") as writer:
-                existing_sheets = writer.book.sheetnames
-                if sheet_name in existing_sheets:
-                    i = 1
-                    while f"{sheet_name}_{i}" in existing_sheets:
-                        i += 1
-                    sheet_name = f"{sheet_name}_{i}"
-                df.to_excel(writer, sheet_name=sheet_name, index=False)
-        else:
-            df.to_excel(RESULT_XLSX, sheet_name=sheet_name, index=False)
+    	# 認証設定
+    	SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
+    	import json
+	import tempfile
 
-        return render_template("done.html")
+	# Render では環境変数から読み込む
+	google_creds_json = os.environ.get("GOOGLE_CREDENTIALS")
 
-    # ✅ まだ質問が残っている場合の処理
+	# 一時ファイルとして保存（gspread はファイルパスを要求するため）
+	with tempfile.NamedTemporaryFile(mode="w+", delete=False) as temp_json:
+    	temp_json.write(google_creds_json)
+    	temp_json_path = temp_json.name
+
+	creds = Credentials.from_service_account_file(temp_json_path, scopes=SCOPES)
+
+    	gc = gspread.authorize(creds)
+
+    	# スプレッドシートとシートを開く
+    	sh = gc.open_by_key(SPREADSHEET_ID)
+    	try:
+        	worksheet = sh.worksheet(SHEET_NAME)
+    	except gspread.exceptions.WorksheetNotFound:
+        	worksheet = sh.add_worksheet(title=SHEET_NAME, rows="100", cols="10")
+
+   	 # 日付を先頭に追加
+    	df.insert(0, "timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
+    	# pandas → list に変換して書き込み
+    	values = [df.columns.values.tolist()] + df.values.tolist()
+    	worksheet.append_rows(values)
+
+    	return render_template("done.html")
+
+
     pair = session["pairs"][current]
     session["current"] = current + 1
 
@@ -102,3 +123,7 @@ def survey():
         question_num=current + 1,
         total=len(session["pairs"])
     )
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
