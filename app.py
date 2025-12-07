@@ -47,7 +47,7 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/survey", methods=["GET", "POST"])
+@app.route("/survey/<int:grade>", methods=["GET", "POST"])
 def survey():
     current = session.get("current", 0)
     responses = session.get("responses", [])
