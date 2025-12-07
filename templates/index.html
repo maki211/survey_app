@@ -52,18 +52,49 @@
             </ol>
         </section>
 
-        <!-- 学年選択 -->
+        
+            <!-- 学年選択 -->
         <section>
             <h2>学年を選択してください</h2>
             <div class="grade-buttons">
-                <a href="/survey/1" class="btn">1年</a>
-                <a href="/survey/2" class="btn">2年</a>
-                <a href="/survey/3" class="btn">3年</a>
-                <a href="/survey/4" class="btn">4年</a>
-                <a href="/survey/5" class="btn">5年</a>
+        
+                <form action="/" method="POST">
+                    <input type="hidden" name="grade" value="本科1">
+                    <button class="btn" type="submit">1年</button>
+                </form>
+        
+                <form action="/" method="POST">
+                    <input type="hidden" name="grade" value="本科2">
+                    <button class="btn" type="submit">2年</button>
+                </form>
+        
+                <form action="/" method="POST">
+                    <input type="hidden" name="grade" value="本科3">
+                    <button class="btn" type="submit">3年</button>
+                </form>
+        
+                <form action="/" method="POST">
+                    <input type="hidden" name="grade" value="本科4">
+                    <button class="btn" type="submit">4年</button>
+                </form>
+        
+                <form action="/" method="POST">
+                    <input type="hidden" name="grade" value="本科5">
+                    <button class="btn" type="submit">5年</button>
+                </form>
+        
+                <form action="/" method="POST">
+                    <input type="hidden" name="grade" value="専攻科1">
+                    <button class="btn" type="submit">専攻科1</button>
+                </form>
+        
+                <form action="/" method="POST">
+                    <input type="hidden" name="grade" value="専攻科2">
+                    <button class="btn" type="submit">専攻科2</button>
+                </form>
+        
             </div>
         </section>
-
     </main>
 
 </body>
