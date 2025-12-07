@@ -39,7 +39,8 @@ pairs = make_pairs()
 def index():
     if request.method == "POST":
         session["grade"] = request.form.get("grade")
-        session["pairs"] = random.sample(pairs, min(NUM_QUESTIONS, len(pairs)))
+        available_pairs = make_pairs()
+        session["pairs"] = random.sample(available_pairs, min(NUM_QUESTIONS, len(pairs)))
         session["current"] = 0
         session["responses"] = []
         return redirect(url_for("survey", grade=session["grade"]))
@@ -94,7 +95,9 @@ def survey(grade):
         except gspread.exceptions.WorksheetNotFound:
             worksheet = sh.add_worksheet(title=SHEET_NAME, rows="100", cols="10")
 
-        df.insert(0, "timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        import pytz
+        jst = datatime.now(pytz.timezone("Asia/Tokyo"))
+        df.insert(0, "timestamp", jst.strftime("%Y-%m-%d %H:%M:%S"))
         values = [df.columns.values.tolist()] + df.values.tolist()
         worksheet.append_rows(values)
 
