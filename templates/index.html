@@ -1,27 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-    <meta charset="utf-8">
-    <title>学年選択</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="UTF-8">
+    <title>父母ヶ浜 画像生成AI アンケート</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
-    <div class="card">
-        <h2>アンケート開始</h2>
-        <form method="POST">
-            <label for="grade">学年を選択してください:</label><br>
-            <select name="grade" id="grade" required>
-                <option value="">--選択--</option>
-                <option value="本科1">本科1</option>
-                <option value="本科2">本科2</option>
-                <option value="本科3">本科3</option>
-                <option value="本科4">本科4</option>
-                <option value="本科5">本科5</option>
-                <option value="専攻科1">専攻科1</option>
-                <option value="専攻科2">専攻科2</option>
-            </select><br><br>
-            <button type="submit" class="btn">開始</button>
-        </form>
-    </div>
+
+    <!-- バナー部分（背景に父母ヶ浜の画像） -->
+    <header class="hero-header">
+        <div class="hero-text">
+            <h1>父母ヶ浜の風景画像生成AIに関するアンケート</h1>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- アンケートの目的 -->
+        <section>
+            <h2>アンケートの目的</h2>
+            <p>
+                本アンケートでは、AIを用いて生成した風景画像が、
+                <strong>人と同じような評価になるか</strong> を調査します。
+            </p>
+        </section>
+
+        <!-- アンケート例（画像例を1ペア） -->
+        <section>
+            <h2>アンケートの例</h2>
+            <div class="example-pair">
+                <div>
+                    <p>生成画像（左）</p>
+                    <img src="{{ url_for('static', filename='img/example_generated.jpg') }}" class="example-img">
+                </div>
+                <div>
+                    <p>実画像（右）</p>
+                    <img src="{{ url_for('static', filename='img/example_real.jpg') }}" class="example-img">
+                </div>
+            </div>
+        </section>
+
+        <!-- アンケート手順 -->
+        <section>
+            <h2>アンケートの手順</h2>
+            <ol>
+                <li>以下の自分の学年のボタンをクリックしてアンケートを開始します。</li>
+                <li>表示された2枚の画像を比較し，2つの質問の選択肢から感じたものを選んでください。</li>
+                <li>2つとも選択した後，「次へ」を押してください。</li>
+                <li>この流れを <strong>10 回</strong> 行うとアンケート終了です。</li>
+            </ol>
+        </section>
+
+        <!-- 学年選択 -->
+        <section>
+            <h2>学年を選択してください</h2>
+            <div class="grade-buttons">
+                <a href="/survey/1" class="btn">1年</a>
+                <a href="/survey/2" class="btn">2年</a>
+                <a href="/survey/3" class="btn">3年</a>
+                <a href="/survey/4" class="btn">4年</a>
+                <a href="/survey/5" class="btn">5年</a>
+            </div>
+        </section>
+
+    </main>
+
 </body>
 </html>
