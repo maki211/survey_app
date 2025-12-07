@@ -12,7 +12,7 @@ body {
    ヒーローヘッダー（上部バナー）
 ----------------------------------- */
 .hero-header {
-    background-image: url("/static/images/fuboka_bg.jpg");
+    background-image: url("/static/images/fuboka_bgg.jpg");
     background-size: cover;
     background-position: center;
     height: 220px;
