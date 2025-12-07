@@ -1,65 +1,121 @@
-body {
+/* -----------------------------------
+   全体
+----------------------------------- */
+body { 
     margin: 0;
-    font-family: sans-serif;
+    font-family: "Hiragino Sans", "Noto Sans JP", sans-serif;
     background: #fafafa;
+    color: #333;
 }
 
-/* 上のバナー */
+/* -----------------------------------
+   ヒーローヘッダー（上部バナー）
+----------------------------------- */
 .hero-header {
     background-image: url("/static/images/fuboka_bg.jpg");
     background-size: cover;
     background-position: center;
-    padding: 60px 20px;
-    text-align: center;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: white;
+    text-shadow: 0 0 8px rgba(0,0,0,0.7);
 }
 
 .hero-header h1 {
-    font-size: 28px;
-    text-shadow: 0px 0px 8px #000;
+    font-size: 32px;
+    padding: 0 10px;
 }
 
-/* コンテンツ */
+/* -----------------------------------
+   メインコンテンツ
+----------------------------------- */
 .container {
-    width: 85%;
+    width: 90%;
     max-width: 900px;
     margin: auto;
-    padding: 30px 0;
+    padding: 40px 0;
 }
 
-h2 {
+/* セクションの白いカード風ボックス */
+.section-box {
+    background: white;
+    border-radius: 12px;
+    padding: 30px 25px;
     margin-top: 40px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
 
-/* アンケート例の画像配置 */
-.example-pair {
+/* タイトル装飾 */
+.section-title {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ddd;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+/* 説明文 */
+.section-desc {
+    text-align: center;
+    line-height: 1.8;
+}
+
+/* -----------------------------------
+   目的の画像例
+----------------------------------- */
+.purpose-images {
     display: flex;
-    justify-content: space-between;
-    gap: 20px;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 25px;
+}
+
+.purpose-images p {
+    text-align: center;
 }
 
 .example-img {
-    width: 100%;
-    max-width: 350px;
-    border-radius: 6px;
+    width: 280px;
+    border-radius: 10px;
     border: 1px solid #ccc;
 }
 
-/* 学年ボタン */
+/* -----------------------------------
+   手順リスト
+----------------------------------- */
+.steps {
+    line-height: 1.8;
+    padding: 0 20px;
+}
+
+/* -----------------------------------
+   学年選択ボタン
+----------------------------------- */
+.center {
+    text-align: center;
+}
+
 .grade-buttons {
     margin-top: 25px;
 }
 
-.btn {
+.btn-grade {
     display: inline-block;
     margin: 8px;
-    padding: 12px 24px;
-    background: #0077cc;
+    padding: 14px 32px;
+    background: #8b4ae2;
     color: white;
-    border-radius: 6px;
+    border-radius: 30px;
     text-decoration: none;
+    font-size: 18px;
+    transition: 0.2s;
+    font-weight: bold;
 }
 
-.btn:hover {
-    background: #005fa3;
+.btn-grade:hover {
+    background: #6b2ec7;
+    transform: translateY(-2px);
 }
