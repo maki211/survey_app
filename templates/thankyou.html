@@ -1,14 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-    <meta charset="utf-8">
-    <title>アンケート終了</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="UTF-8">
+    <title>アンケート完了</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
-    <div class="card">
-        <h2>アンケートありがとうございました！</h2>
-        <p>ご協力感謝します。</p>
-    </div>
+
+    <main class="container">
+        <h1>アンケートへのご協力ありがとうございました！</h1>
+
+        <p>アンケートは正常に送信されました。</p>
+
+        <p>  
+            <strong>複数回回答していただいて構いません！</strong>
+        </p>
+
+        <a href="/" class="btn">トップページに戻る</a>
+    </main>
+
 </body>
 </html>
