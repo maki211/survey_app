@@ -48,10 +48,17 @@ def index():
 
 
 @app.route("/survey/<int:grade>", methods=["GET", "POST"])
-def survey():
+def survey(grade):
+    # 最初のアクセス（POST ではない時）で grade を保存
+    if request.method == "GET":
+        session["grade"] = grade
+        session["current"] = 0
+        session["responses"] = []
+
     current = session.get("current", 0)
     responses = session.get("responses", [])
 
+    # ===== 回答の受け取り処理 =====
     if request.method == "POST" and current > 0:
         sim = request.form.get("similarity")
         weather = request.form.get("weather")
@@ -69,17 +76,14 @@ def survey():
         })
         session["responses"] = responses
 
-
+    # ===== 全問終了 → Google Sheets に保存 =====
     if current >= len(session["pairs"]):
         df = pd.DataFrame(responses)
 
-        # ===== Google Sheets に追記 =====
         SHEET_NAME = "アンケート結果"
         SPREADSHEET_ID = "150Qv1M4eRfaNJQnznln1SnUC4yVqFKTFhI0EOjcb2Ak"
-
         SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
-        # 🔽 Render 環境変数から credentials を取得
         creds_info = json.loads(os.environ["GOOGLE_CREDENTIALS"])
         creds = Credentials.from_service_account_info(creds_info, scopes=SCOPES)
         gc = gspread.authorize(creds)
@@ -96,7 +100,7 @@ def survey():
 
         return render_template("done.html")
 
-
+    # ===== 次の問題を表示 =====
     pair = session["pairs"][current]
     session["current"] = current + 1
 
@@ -109,6 +113,7 @@ def survey():
         question_num=current + 1,
         total=len(session["pairs"])
     )
+
 @app.route("/thankyou")
 def thankyou():
     return render_template("thankyou.html")
