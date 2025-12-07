@@ -1,24 +1,62 @@
 <!DOCTYPE html>
+
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <title>アンケート完了</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .thankyou-container {
+            max-width: 700px;
+            margin: 80px auto;
+            padding: 40px;
+            text-align: center;
+            background: #ffffffcc;
+            border-radius: 15px;
+            box-shadow: 0 0 15px #0002;
+        }
+
+```
+    h1 {
+        margin-bottom: 20px;
+    }
+
+    p {
+        margin: 10px 0 20px;
+        font-size: 1.1rem;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 12px 25px;
+        font-size: 1.1rem;
+        background-color: #4c7fff;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+    }
+
+    .btn:hover {
+        background-color: #345fd1;
+    }
+</style>
+```
+
 </head>
 
 <body>
 
-    <main class="container">
-        <h1>アンケートへのご協力ありがとうございました！</h1>
+```
+<main class="thankyou-container">
+    <h1>アンケートへのご協力ありがとうございました！</h1>
 
-        <p>アンケートは正常に送信されました。</p>
+    <p>アンケートは正常に送信されました。</p>
 
-        <p>  
-            <strong>複数回回答していただいて構いません！</strong>
-        </p>
+    <p><strong>複数回回答していただいても構いません！</strong></p>
 
-        <a href="/" class="btn">トップページに戻る</a>
-    </main>
+    <a href="/" class="btn">トップページに戻る</a>
+</main>
+```
 
 </body>
 </html>
