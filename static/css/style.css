@@ -1,39 +1,65 @@
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f0f4f8;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    margin: 0;
+    font-family: sans-serif;
+    background: #fafafa;
 }
 
-.card {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+/* 上のバナー */
+.hero-header {
+    background-image: url("../static/img/fuboka_bg.jpg");
+    background-size: cover;
+    background-position: center;
+    padding: 60px 20px;
     text-align: center;
-    width: 500px;
+    color: white;
 }
 
-.images img {
-    width: 45%;
-    margin: 5px;
-    border-radius: 8px;
-    border: 2px solid #ccc;
+.hero-header h1 {
+    font-size: 28px;
+    text-shadow: 0px 0px 8px #000;
+}
+
+/* コンテンツ */
+.container {
+    width: 85%;
+    max-width: 900px;
+    margin: auto;
+    padding: 30px 0;
+}
+
+h2 {
+    margin-top: 40px;
+}
+
+/* アンケート例の画像配置 */
+.example-pair {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.example-img {
+    width: 100%;
+    max-width: 350px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+/* 学年ボタン */
+.grade-buttons {
+    margin-top: 25px;
 }
 
 .btn {
-    background-color: #4CAF50;
-    border: none;
+    display: inline-block;
+    margin: 8px;
+    padding: 12px 24px;
+    background: #0077cc;
     color: white;
-    padding: 10px 20px;
-    margin: 5px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
+    border-radius: 6px;
+    text-decoration: none;
 }
 
 .btn:hover {
-    background-color: #45a049;
+    background: #005fa3;
 }
