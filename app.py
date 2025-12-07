@@ -42,7 +42,7 @@ def index():
         session["pairs"] = random.sample(pairs, min(NUM_QUESTIONS, len(pairs)))
         session["current"] = 0
         session["responses"] = []
-        return redirect(url_for("survey"))
+        return redirect(url_for("survey", grade=session["grade"]))
 
     return render_template("index.html")
 
