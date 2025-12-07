@@ -44,8 +44,7 @@ def index():
         session["responses"] = []
         return redirect(url_for("survey"))
 
-    grades = ["本科1", "本科2", "本科3", "本科4", "本科5", "専攻科1", "専攻科2"]
-    return render_template("survey.html", stage="grade", grades=grades)
+    return render_template("index.html")
 
 
 @app.route("/survey", methods=["GET", "POST"])
