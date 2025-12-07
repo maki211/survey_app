@@ -110,7 +110,9 @@ def survey():
         question_num=current + 1,
         total=len(session["pairs"])
     )
-
+@app.route("/thankyou")
+def thankyou():
+    return render_template("thankyou.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
