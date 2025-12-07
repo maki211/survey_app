@@ -2,13 +2,13 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>父母ヶ浜 画像生成AI アンケート</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>父母ヶ浜の風景画像生成AIに関するアンケート</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 
-    <!-- バナー部分（背景に父母ヶ浜の画像） -->
+    <!-- ヒーローヘッダー（背景画像） -->
     <header class="hero-header">
         <div class="hero-text">
             <h1>父母ヶ浜の風景画像生成AIに関するアンケート</h1>
@@ -18,83 +18,50 @@
     <main class="container">
 
         <!-- アンケートの目的 -->
-        <section>
-            <h2>アンケートの目的</h2>
-            <p>
-                本アンケートでは、AIを用いて生成した風景画像が、
-                <strong>人と同じような評価になるか</strong> を調査します。
+        <section class="section-box">
+            <h2 class="section-title">アンケートの目的</h2>
+            <p class="section-desc">
+                本アンケートでは、AI を用いて生成した風景画像が、
+                <strong>人と同じように評価されるか</strong> を調査します。
             </p>
-        </section>
 
-        <!-- アンケート例（画像例を1ペア） -->
-        <section>
-            <h2>アンケートの例</h2>
-            <div class="example-pair">
+            <div class="purpose-images">
                 <div>
-                    <p>実画像（左）</p>
-                    <img src="{{ url_for('static', filename='images/example_real.jpg') }}" class="example-img">
+                    <p>AI生成画像の例</p>
+                    <img src="{{ url_for('static', filename='images/example_generated.jpg') }}" class="example-img">
                 </div>
                 <div>
-                    <p>生成画像（右）</p>
-                    <img src="{{ url_for('static', filename='images/example_generated.jpg') }}" class="example-img">
+                    <p>実際の写真の例</p>
+                    <img src="{{ url_for('static', filename='images/example_real.jpg') }}" class="example-img">
                 </div>
             </div>
         </section>
 
         <!-- アンケート手順 -->
-        <section>
-            <h2>アンケートの手順</h2>
-            <ol>
-                <li>以下の自分の学年のボタンをクリックしてアンケートを開始します。</li>
-                <li>表示された2枚の画像を比較し，2つの質問の選択肢から感じたものを選んでください。</li>
-                <li>2つとも選択した後，「次へ」を押してください。</li>
+        <section class="section-box">
+            <h2 class="section-title">アンケートの手順</h2>
+            <ol class="steps">
+                <li>下の自分の学年ボタンを押してアンケートを開始します。</li>
+                <li>2枚の画像を見比べて、2つの質問の選択肢から最も近いものを選びます。</li>
+                <li>2つとも選択後、「次へ」を押してください。</li>
                 <li>この流れを <strong>10 回</strong> 行うとアンケート終了です。</li>
             </ol>
         </section>
 
-        
-            <!-- 学年選択 -->
-        <section>
-            <h2>学年を選択してください</h2>
+        <!-- 学年選択（従来通り） -->
+        <section class="section-box center">
+            <h2 class="section-title">学年を選択してください</h2>
             <div class="grade-buttons">
-        
-                <form action="/" method="POST">
-                    <input type="hidden" name="grade" value="本科1">
-                    <button class="btn" type="submit">1年</button>
-                </form>
-        
-                <form action="/" method="POST">
-                    <input type="hidden" name="grade" value="本科2">
-                    <button class="btn" type="submit">2年</button>
-                </form>
-        
-                <form action="/" method="POST">
-                    <input type="hidden" name="grade" value="本科3">
-                    <button class="btn" type="submit">3年</button>
-                </form>
-        
-                <form action="/" method="POST">
-                    <input type="hidden" name="grade" value="本科4">
-                    <button class="btn" type="submit">4年</button>
-                </form>
-        
-                <form action="/" method="POST">
-                    <input type="hidden" name="grade" value="本科5">
-                    <button class="btn" type="submit">5年</button>
-                </form>
-        
-                <form action="/" method="POST">
-                    <input type="hidden" name="grade" value="専攻科1">
-                    <button class="btn" type="submit">専攻科1</button>
-                </form>
-        
-                <form action="/" method="POST">
-                    <input type="hidden" name="grade" value="専攻科2">
-                    <button class="btn" type="submit">専攻科2</button>
-                </form>
-        
+                <a href="/survey/1" class="btn-grade">1年</a>
+                <a href="/survey/2" class="btn-grade">2年</a>
+                <a href="/survey/3" class="btn-grade">3年</a>
+                <a href="/survey/4" class="btn-grade">4年</a>
+                <a href="/survey/5" class="btn-grade">5年</a>
+                <a href="/survey/5" class="btn-grade">AI1年</a>
+                <a href="/survey/5" class="btn-grade">AI2年</a>
             </div>
         </section>
+
     </main>
 
 </body>
