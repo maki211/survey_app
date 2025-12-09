@@ -15,29 +15,57 @@ NUM_QUESTIONS = 10
 
 
 # ======================================================
-#  高速版：アプリ起動時に一度だけペアを作成（超重要）
+#  prefix 抽出関数（★ここがめちゃ重要★）
+# ======================================================
+
+def extract_prefix_real(filename):
+    """実写: 20241114_0250.jpg → 20241114_0250"""
+    return os.path.splitext(filename)[0]
+
+
+def extract_prefix_synth(filename):
+    """
+    生成画像:
+      20241114_0250_r14_FLDK_06_04_05_synthesized_image.jpg
+    → 20241114_0250 を返す
+    """
+    base = os.path.splitext(filename)[0]
+    parts = base.split("_")
+
+    # ["20241114", "0250", "r14", ...] の構造なので先頭2つを使う
+    if len(parts) >= 2:
+        return parts[0] + "_" + parts[1]
+    return None
+
+
+# ======================================================
+#  高速版：アプリ起動時に一度だけペア生成
 # ======================================================
 def build_pairs():
     real_files = os.listdir(REAL_FOLDER)
     synth_files = os.listdir(SYNTH_FOLDER)
 
-    # prefix をキーにした辞書（高速検索）
-    synth_dict = {os.path.splitext(s)[0]: s for s in synth_files}
+    # 生成画像 prefix → ファイル名 の辞書
+    synth_dict = {}
+    for s in synth_files:
+        p = extract_prefix_synth(s)
+        if p:
+            synth_dict[p] = s
 
     pairs = []
     for real in real_files:
-        prefix = os.path.splitext(real)[0]
-        if prefix in synth_dict:
+        real_prefix = extract_prefix_real(real)
+        if real_prefix in synth_dict:
             pairs.append({
-                "prefix": prefix,
+                "prefix": real_prefix,
                 "real": real,
-                "synth": synth_dict[prefix]
+                "synth": synth_dict[real_prefix]
             })
 
     return pairs
 
 
-# アプリ起動時に一度だけ構築 → 毎回 0.00 秒でアクセス可能
+# アプリ起動時に1度だけ実行（高速）
 ALL_PAIRS = build_pairs()
 print("PAIR COUNT:", len(ALL_PAIRS))
 
@@ -45,38 +73,20 @@ print("PAIR COUNT:", len(ALL_PAIRS))
 # ======================================================
 #  ルーティング
 # ======================================================
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
+
 
 @app.route("/survey/<int:grade>", methods=["GET", "POST"])
 def survey(grade):
 
-    print("---- ACCESS /survey ----")
-    print("method:", request.method)
-    print("session grade:", session.get("grade"))
-    print("session current:", session.get("current"))
-    print("session pairs exist:", "pairs" in session)
-    print("-------------------------")
-
-    # 最初のアクセス（GET または current が None または存在しない）
-    if request.method == "GET" or session.get("current") is None:
-        print(">>> INITIALIZE SESSION <<<")
-        session["grade"] = grade
-        session["current"] = 0
-        session["responses"] = []
-        session["pairs"] = random.sample(
-            ALL_PAIRS,
-            min(NUM_QUESTIONS, len(ALL_PAIRS))
-        )
-
-    # --- 最初のアクセス（POSTではなく current が 0 か responses が空） ---
+    # --- 初回アクセス（GET または current 未定義） ---
     if request.method == "GET" or session.get("current") is None:
         session["grade"] = grade
         session["current"] = 0
         session["responses"] = []
 
-        # ペアの再生成
         session["pairs"] = random.sample(
             ALL_PAIRS,
             min(NUM_QUESTIONS, len(ALL_PAIRS))
@@ -85,7 +95,7 @@ def survey(grade):
     current = session.get("current", 0)
     responses = session.get("responses", [])
 
-    # --- 回答処理 ---
+    # --- POSTでの回答処理 ---
     if request.method == "POST" and current > 0:
         sim = request.form.get("similarity")
         weather = request.form.get("weather")
@@ -103,13 +113,37 @@ def survey(grade):
         })
         session["responses"] = responses
 
-    # --- 最後の質問終了 ---
+    # --- 全回答終了 ---
     if current >= len(session["pairs"]):
         df = pd.DataFrame(responses)
-        ...
+
+        # --------------------------
+        #  Google Sheet へ保存処理
+        # --------------------------
+        SHEET_NAME = "アンケート結果"
+        SPREADSHEET_ID = "150Qv1M4eRfaNJQnznln1SnUC4yVqFKTFhI0EOjcb2Ak"
+        SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
+
+        creds_info = json.loads(os.environ["GOOGLE_CREDENTIALS"])
+        creds = Credentials.from_service_account_info(creds_info, scopes=SCOPES)
+        gc = gspread.authorize(creds)
+
+        sh = gc.open_by_key(SPREADSHEET_ID)
+        try:
+            worksheet = sh.worksheet(SHEET_NAME)
+        except gspread.exceptions.WorksheetNotFound:
+            worksheet = sh.add_worksheet(title=SHEET_NAME, rows="100", cols="10")
+
+        import pytz
+        jst = datetime.now(pytz.timezone("Asia/Tokyo"))
+        df.insert(0, "timestamp", jst.strftime("%Y-%m-%d %H:%M:%S"))
+
+        values = [df.columns.values.tolist()] + df.values.tolist()
+        worksheet.append_rows(values)
+
         return render_template("done.html")
 
-    # --- 次の問題 ---
+    # --- 次の質問表示 ---
     pair = session["pairs"][current]
     session["current"] = current + 1
 
@@ -122,11 +156,6 @@ def survey(grade):
         question_num=current + 1,
         total=len(session["pairs"])
     )
-
-
-@app.route("/thankyou")
-def thankyou():
-    return render_template("thankyou.html")
 
 
 if __name__ == "__main__":
