@@ -9,26 +9,6 @@ body {
 }
 
 /* -----------------------------------
-   ヒーローヘッダー（上部バナー）
------------------------------------ */
-.hero-header {
-    background-image: url("/static/example/fuboka_bgg.jpg");
-    background-size: cover;
-    background-position: center;
-    height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    text-shadow: 0 0 8px rgba(0,0,0,0.7);
-}
-
-.hero-header h1 {
-    font-size: 32px;
-    padding: 0 10px;
-}
-
-/* -----------------------------------
    メインコンテンツ
 ----------------------------------- */
 .container {
