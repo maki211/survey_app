@@ -78,12 +78,11 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/survey/<int:grade>", methods=["GET", "POST"])
-def survey(grade):
+@app.route("/survey", methods=["GET", "POST"])
+def survey():
 
     # --- 初回アクセス（GET または current 未定義） ---
     if request.method == "GET" or session.get("current") is None:
-        session["grade"] = grade
         session["current"] = 0
         session["responses"] = []
 
@@ -104,7 +103,6 @@ def survey(grade):
 
         pair = session["pairs"][current - 1]
         responses.append({
-            "grade": session["grade"],
             "prefix": pair["prefix"],
             "real": pair["real"],
             "synth": pair["synth"],
@@ -143,7 +141,7 @@ def survey(grade):
 
         return render_template("done.html")
 
-    # --- 次の質問表示 ---
+    # --- 次の問題 ---
     pair = session["pairs"][current]
     session["current"] = current + 1
 
