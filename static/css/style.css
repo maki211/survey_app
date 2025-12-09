@@ -66,12 +66,11 @@ body {
 }
 /* 例の画像（左右に並んでいるやつ）の縦を揃える */
 .example-img {
-    width: 350px;         /* 横幅 */
-    height: 220px;        /* 縦幅を固定して揃える */
-    object-fit: contain;    /* 自然にトリミングしてフィット */
-    border-radius: 12px;
-    border: 2px solid #ddd;
-    background-color: #fff;
+    width: 480px;
+    height: 260px;
+    object-fit: cover;   /* はみ出しをトリミングして統一 */
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
 }
 
 /* 並び調整 */
