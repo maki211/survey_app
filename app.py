@@ -53,13 +53,13 @@ def index():
 @app.route("/survey/<int:grade>", methods=["GET", "POST"])
 def survey(grade):
 
-    # 最初のアクセス時（GET）
-    if request.method == "GET":
+    # --- 最初のアクセス（POSTではなく current が 0 か responses が空） ---
+    if request.method == "GET" or session.get("current") is None:
         session["grade"] = grade
         session["current"] = 0
         session["responses"] = []
 
-        # 毎回高速にランダム抽出（ALL_PAIRS はキャッシュ済み）
+        # ペアの再生成
         session["pairs"] = random.sample(
             ALL_PAIRS,
             min(NUM_QUESTIONS, len(ALL_PAIRS))
@@ -68,7 +68,7 @@ def survey(grade):
     current = session.get("current", 0)
     responses = session.get("responses", [])
 
-    # 回答処理
+    # --- 回答処理 ---
     if request.method == "POST" and current > 0:
         sim = request.form.get("similarity")
         weather = request.form.get("weather")
@@ -86,33 +86,13 @@ def survey(grade):
         })
         session["responses"] = responses
 
-    # 全問終了 → Google Sheets へ保存
+    # --- 最後の質問終了 ---
     if current >= len(session["pairs"]):
         df = pd.DataFrame(responses)
-
-        SHEET_NAME = "アンケート結果"
-        SPREADSHEET_ID = "150Qv1M4eRfaNJQnznln1SnUC4yVqFKTFhI0EOjcb2Ak"
-        SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-
-        creds_info = json.loads(os.environ["GOOGLE_CREDENTIALS"])
-        creds = Credentials.from_service_account_info(creds_info, scopes=SCOPES)
-        gc = gspread.authorize(creds)
-
-        sh = gc.open_by_key(SPREADSHEET_ID)
-        try:
-            worksheet = sh.worksheet(SHEET_NAME)
-        except gspread.exceptions.WorksheetNotFound:
-            worksheet = sh.add_worksheet(title=SHEET_NAME, rows="100", cols="10")
-
-        import pytz
-        jst = datetime.now(pytz.timezone("Asia/Tokyo"))
-        df.insert(0, "timestamp", jst.strftime("%Y-%m-%d %H:%M:%S"))
-        values = [df.columns.values.tolist()] + df.values.tolist()
-        worksheet.append_rows(values)
-
+        ...
         return render_template("done.html")
 
-    # 次の問題へ
+    # --- 次の問題 ---
     pair = session["pairs"][current]
     session["current"] = current + 1
 
