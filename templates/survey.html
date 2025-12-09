@@ -29,13 +29,14 @@
       margin-bottom: 25px;
     }
 
-    .img-container img {
-      max-width: 400px;
-      width: 100%;
+    .img-container div img { 
+      width: 400px;
+      height: 250px;
+      object-fit: cover;   /* はみ出しをトリミングして統一 */
       border-radius: 10px;
-      transition: transform 0.3s;
       box-shadow: 0 3px 10px rgba(0,0,0,0.2);
     }
+
 
     .img-container img:hover {
       transform: scale(1.03);
