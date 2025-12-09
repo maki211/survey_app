@@ -40,7 +40,7 @@ def index():
     if request.method == "POST":
         session["grade"] = request.form.get("grade")
         available_pairs = make_pairs()
-        session["pairs"] = random.sample(available_pairs, min(NUM_QUESTIONS, len(pairs)))
+        session["pairs"] = random.sample(available_pairs, min(NUM_QUESTIONS, len(available_pairs)))
         session["current"] = 0
         session["responses"] = []
         return redirect(url_for("survey", grade=session["grade"]))
@@ -55,6 +55,9 @@ def survey(grade):
         session["grade"] = grade
         session["current"] = 0
         session["responses"] = []
+    
+        available_pairs = make_pairs()
+        session["pairs"] = random.sample(available_pairs, min(NUM_QUESTIONS, len(available_pairs)))
 
     current = session.get("current", 0)
     responses = session.get("responses", [])
@@ -96,7 +99,7 @@ def survey(grade):
             worksheet = sh.add_worksheet(title=SHEET_NAME, rows="100", cols="10")
 
         import pytz
-        jst = datatime.now(pytz.timezone("Asia/Tokyo"))
+        jst = datetime.now(pytz.timezone("Asia/Tokyo"))
         df.insert(0, "timestamp", jst.strftime("%Y-%m-%d %H:%M:%S"))
         values = [df.columns.values.tolist()] + df.values.tolist()
         worksheet.append_rows(values)
