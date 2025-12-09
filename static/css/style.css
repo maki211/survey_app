@@ -88,13 +88,26 @@ body {
    手順リスト
 ----------------------------------- */
 .steps {
-  text-align: center;        /* 全体を中央寄せ */
-  list-style-position: inside; /* 数字を内側にして整える */
   padding-left: 0;
+  list-style: none; /* デフォルトの番号を消す */
 }
 
 .steps li {
+  display: flex;
+  justify-content: center;  /* 全体を中央寄せ */
   margin-bottom: 8px;
+}
+
+.steps li::before {
+  content: counter(step) ". ";
+  counter-increment: step;
+  width: 2em;          /* 番号の横幅を固定 → 縦位置が揃う */
+  text-align: right;   /* 番号を右揃えにする */
+  margin-right: 0.3em;
+}
+
+.steps {
+  counter-reset: step;
 }
 
 
