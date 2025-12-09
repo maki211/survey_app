@@ -5,64 +5,70 @@ from datetime import datetime
 import gspread
 from google.oauth2.service_account import Credentials
 import json
-import os
-
 
 app = Flask(__name__)
 app.secret_key = "secret_key_for_session"
 
 REAL_FOLDER = "static/chichi_img"
 SYNTH_FOLDER = "static/images"
-RESULT_XLSX = "results.xlsx"
 NUM_QUESTIONS = 10
 
 
-def make_pairs():
+# ======================================================
+#  高速版：アプリ起動時に一度だけペアを作成（超重要）
+# ======================================================
+def build_pairs():
     real_files = os.listdir(REAL_FOLDER)
     synth_files = os.listdir(SYNTH_FOLDER)
 
+    # prefix をキーにした辞書（高速検索）
+    synth_dict = {os.path.splitext(s)[0]: s for s in synth_files}
+
     pairs = []
     for real in real_files:
-        real_prefix = os.path.splitext(real)[0]
-        match = next((s for s in synth_files if real_prefix in s), None)
-        if match:
+        prefix = os.path.splitext(real)[0]
+        if prefix in synth_dict:
             pairs.append({
-                "prefix": real_prefix,
+                "prefix": prefix,
                 "real": real,
-                "synth": match
+                "synth": synth_dict[prefix]
             })
+
     return pairs
 
-pairs = make_pairs()
 
+# アプリ起動時に一度だけ構築 → 毎回 0.00 秒でアクセス可能
+ALL_PAIRS = build_pairs()
+print("PAIR COUNT:", len(ALL_PAIRS))
+
+
+# ======================================================
+#  ルーティング
+# ======================================================
 @app.route("/", methods=["GET", "POST"])
 def index():
-    if request.method == "POST":
-        session["grade"] = request.form.get("grade")
-        available_pairs = make_pairs()
-        session["pairs"] = random.sample(available_pairs, min(NUM_QUESTIONS, len(available_pairs)))
-        session["current"] = 0
-        session["responses"] = []
-        return redirect(url_for("survey", grade=session["grade"]))
-
     return render_template("index.html")
 
 
 @app.route("/survey/<int:grade>", methods=["GET", "POST"])
 def survey(grade):
-    # 最初のアクセス（POST ではない時）で grade を保存
+
+    # 最初のアクセス時（GET）
     if request.method == "GET":
         session["grade"] = grade
         session["current"] = 0
         session["responses"] = []
-    
-        available_pairs = make_pairs()
-        session["pairs"] = random.sample(available_pairs, min(NUM_QUESTIONS, len(available_pairs)))
+
+        # 毎回高速にランダム抽出（ALL_PAIRS はキャッシュ済み）
+        session["pairs"] = random.sample(
+            ALL_PAIRS,
+            min(NUM_QUESTIONS, len(ALL_PAIRS))
+        )
 
     current = session.get("current", 0)
     responses = session.get("responses", [])
 
-    # ===== 回答の受け取り処理 =====
+    # 回答処理
     if request.method == "POST" and current > 0:
         sim = request.form.get("similarity")
         weather = request.form.get("weather")
@@ -80,7 +86,7 @@ def survey(grade):
         })
         session["responses"] = responses
 
-    # ===== 全問終了 → Google Sheets に保存 =====
+    # 全問終了 → Google Sheets へ保存
     if current >= len(session["pairs"]):
         df = pd.DataFrame(responses)
 
@@ -106,7 +112,7 @@ def survey(grade):
 
         return render_template("done.html")
 
-    # ===== 次の問題を表示 =====
+    # 次の問題へ
     pair = session["pairs"][current]
     session["current"] = current + 1
 
@@ -120,9 +126,11 @@ def survey(grade):
         total=len(session["pairs"])
     )
 
+
 @app.route("/thankyou")
 def thankyou():
     return render_template("thankyou.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
