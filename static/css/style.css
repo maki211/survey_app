@@ -94,7 +94,7 @@ body {
 
 .steps li {
   display: flex;
-  justify-content: center;  /* 全体を中央寄せ */
+  justify-content: left;  /* 全体を中央寄せ */
   margin-bottom: 8px;
 }
 
