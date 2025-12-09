@@ -18,6 +18,16 @@ body {
     padding: 40px 0;
 }
 
+.survey-img {
+    width: 420px;          /* 横幅（あなたのUIに合わせて調整可） */
+    height: 300px;         /* 全ての画像枠を同じ高さに統一 */
+    object-fit: contain;   /* 比率を保って枠内に収める */
+    background-color: #fff; /* 足りない部分に余白（白）を入れる */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 6px;          /* 画像と枠の間に余白 */
+}
+
 /* セクションの白いカード風ボックス */
 .section-box {
     background: white;
