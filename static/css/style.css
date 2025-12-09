@@ -44,7 +44,7 @@ body {
     margin-bottom: 20px;
     color: #6A4DF4;     /* ボタンと同じ紫 */
     border-left: 6px solid #6A4DF4;
-    padding-left: 12px;
+    padding-bottom: 9px;
 }
 
 /* 説明文 */
