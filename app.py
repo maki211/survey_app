@@ -49,9 +49,26 @@ print("PAIR COUNT:", len(ALL_PAIRS))
 def index():
     return render_template("index.html")
 
-
 @app.route("/survey/<int:grade>", methods=["GET", "POST"])
 def survey(grade):
+
+    print("---- ACCESS /survey ----")
+    print("method:", request.method)
+    print("session grade:", session.get("grade"))
+    print("session current:", session.get("current"))
+    print("session pairs exist:", "pairs" in session)
+    print("-------------------------")
+
+    # 最初のアクセス（GET または current が None または存在しない）
+    if request.method == "GET" or session.get("current") is None:
+        print(">>> INITIALIZE SESSION <<<")
+        session["grade"] = grade
+        session["current"] = 0
+        session["responses"] = []
+        session["pairs"] = random.sample(
+            ALL_PAIRS,
+            min(NUM_QUESTIONS, len(ALL_PAIRS))
+        )
 
     # --- 最初のアクセス（POSTではなく current が 0 か responses が空） ---
     if request.method == "GET" or session.get("current") is None:
