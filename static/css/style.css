@@ -28,23 +28,23 @@ body {
     padding: 6px;          /* 画像と枠の間に余白 */
 }
 
-/* セクションの白いカード風ボックス */
+/* section-box の中央寄せ＆横幅調整 */
 .section-box {
+    max-width: 900px;   /* 好きに調整OK（800〜1000が綺麗） */
+    margin: 40px auto;  /* 中央寄せ */
+    padding: 30px;
     background: white;
-    border-radius: 12px;
-    padding: 30px 25px;
-    margin-top: 40px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.08);
 }
 
-/* タイトル装飾 */
+/* セクションタイトル（紫色に） */
 .section-title {
-    text-align: center;
-    font-size: 22px;
+    font-size: 26px;
     margin-bottom: 20px;
-    border-bottom: 2px solid #ddd;
-    display: inline-block;
-    padding-bottom: 5px;
+    color: #6A4DF4;     /* ボタンと同じ紫 */
+    border-left: 6px solid #6A4DF4;
+    padding-left: 12px;
 }
 
 /* 説明文 */
@@ -62,15 +62,25 @@ body {
     gap: 30px;
     margin-top: 25px;
 }
-
-.purpose-images p {
-    text-align: center;
+/* 例の画像（左右に並んでいるやつ）の縦を揃える */
+.example-img {
+    width: 350px;         /* 横幅 */
+    height: 220px;        /* 縦幅を固定して揃える */
+    object-fit: contain;    /* 自然にトリミングしてフィット */
+    border-radius: 12px;
+    border: 2px solid #ddd;
+    background-color: #fff;
 }
 
-.example-img {
-    width: 280px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
+/* 並び調整 */
+.purpose-images {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-top: 20px;
+}
+.purpose-images p {
+    text-align: center;
 }
 
 /* -----------------------------------
