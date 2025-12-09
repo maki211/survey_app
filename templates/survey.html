@@ -67,6 +67,14 @@
 
 <body>
   <div class="card">
+    {% if stage == "grade" %}
+      <h2 class="text-center mb-4">学年を選択してください</h2>
+      <form method="POST" class="text-center">
+        {% for g in grades %}
+          <button type="submit" name="grade" value="{{ g }}" class="btn btn-outline-primary m-2 btn-lg">{{ g }}</button>
+        {% endfor %}
+      </form>
+    
     {% elif stage == "survey" %}
       <div class="progress mb-3">
         <div class="progress-bar bg-success" role="progressbar"
